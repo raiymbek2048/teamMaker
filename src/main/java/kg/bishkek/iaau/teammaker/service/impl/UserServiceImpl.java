@@ -8,6 +8,7 @@ import kg.bishkek.iaau.teammaker.model.User;
 import kg.bishkek.iaau.teammaker.repository.UserRepository;
 import kg.bishkek.iaau.teammaker.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,14 +27,14 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserProfileResponse getUserProfile(UUID userId) {
         User user = userRepository.findByIdAndActiveTrue(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found", HttpStatus.NOT_FOUND));
         return mapToProfileResponse(user);
     }
 
     @Override
     public UserProfileResponse updateUserProfile(UUID userId, UserProfileRequest request) {
         User user = userRepository.findByIdAndActiveTrue(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found", HttpStatus.NOT_FOUND));
 
         user.setFullName(request.getFullName());
         user.setAge(request.getAge());
@@ -71,7 +72,7 @@ public class UserServiceImpl implements UserService {
     @Transactional(readOnly = true)
     public UserProfileResponse getCurrentUserProfile(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found", HttpStatus.NOT_FOUND));
         return mapToProfileResponse(user);
     }
 

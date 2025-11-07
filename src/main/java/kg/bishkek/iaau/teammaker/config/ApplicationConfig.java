@@ -23,7 +23,7 @@ public class ApplicationConfig {
     @Bean
     public UserDetailsService userDetailsService() {
         return login -> userRepository
-                .findByUsernameOrEmailOrPhoneNumber(login, login, login)
+                .findByUsernameOrEmailOrPhone(login, login, login)
                 .orElseThrow(() -> new NotFoundException("User with this login (username/email/phone number) not found", HttpStatus.NOT_FOUND));
     }
 
