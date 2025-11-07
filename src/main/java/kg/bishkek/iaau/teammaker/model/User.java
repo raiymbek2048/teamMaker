@@ -9,13 +9,12 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 @Entity
 @Table(name = "users", indexes = {
-        @Index(columnList = "email", name = "idx_user_email")
+        @Index(columnList = "email", name = "idx_user_email"),
+        @Index(columnList = "username", name = "idx_user_username")
 })
 @Getter
 @Setter
@@ -23,21 +22,48 @@ public class User  extends BaseEntity implements UserDetails{
 
     @Column(nullable = false, unique = true)
     private String email;
+
     @Column(nullable = false, unique = true)
     private String username;
 
-    @Column
-    private String phoneNumber;
+    @Column(nullable = false)
+    private String password;
 
+    @Column
     private String fullName;
+
+    @Column
+    private Integer age;
+
+    @ElementCollection
+    @CollectionTable(name = "user_skills", joinColumns = @JoinColumn(name = "user_id"))
+    @Column(name = "skill")
+    private Set<String> skills = new HashSet<>();
+
+    @Column(columnDefinition = "TEXT")
+    private String bio;
+
+    @Column
+    private String location;
+
+    @Column
+    private String phone;
+
+    @Column
+    private String telegram;
+
+    @Column
+    private String instagram;
 
     @Column(nullable = false)
     @Enumerated(EnumType.STRING)
-    private Role role; // CUSTOMER, ADMIN, TRADER
+    private Role role = Role.USER;
 
+    @ManyToMany(mappedBy = "members")
+    private Set<Project> projects = new HashSet<>();
 
-    @Column(nullable = false)
-    private String password;
+    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL)
+    private Set<Project> ownedProjects = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
