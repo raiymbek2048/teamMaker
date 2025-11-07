@@ -36,14 +36,10 @@ public class AuthServiceImpl implements AuthService {
         if (userRepository.existsByEmail(req.getEmail())) {
             throw new IllegalArgumentException("Email уже зарегистрирован");
         }
-        if (userRepository.existsByPhoneNumber(req.getPhoneNumber())) {
-            throw new IllegalArgumentException("Номер телефона уже зарегистрирован");
-        }
 
         User user = new User();
         user.setUsername(req.getUsername());
         user.setEmail(req.getEmail());
-        user.setPhoneNumber(req.getPhoneNumber());
         user.setPassword(passwordEncoder.encode(req.getPassword()));
         user.setRole(Role.USER);
         userRepository.save(user);
@@ -52,10 +48,10 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthResponse login(LoginRequest loginRequest) {
 
-        Optional<User> user = userRepository.findByUsernameOrEmailOrPhoneNumber(loginRequest.getLogin(), loginRequest.getLogin(), loginRequest.getLogin());
+        Optional<User> user = userRepository.findByUsernameOrEmailOrPhone(loginRequest.getLogin(), loginRequest.getLogin(), loginRequest.getLogin());
         String token;
         if (user.isEmpty())
-            throw new BadRequestException("User with this login (username/email/phone number) does not exist");
+            throw new BadRequestException("User with this login (username/email/phone) does not exist");
         try {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getLogin(), loginRequest.getPassword()));
             token = jwtService.generateToken(user.get());
