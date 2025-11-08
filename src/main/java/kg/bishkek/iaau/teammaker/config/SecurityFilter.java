@@ -25,15 +25,16 @@ public class SecurityFilter {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        return http.csrf(AbstractHttpConfigurer::disable)
+        return http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
+                .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
+                        .requestMatchers(WHITE_LIST_URL).permitAll()
+                        .requestMatchers("/auth/**","/public/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/trader/**").hasRole("TRADER")
                         .requestMatchers("/item/**").hasAnyAuthority("BARDER_USER","TRADER","ADMIN")
-                        .requestMatchers("/auth/**","/public/**").permitAll()
-                        .requestMatchers(WHITE_LIST_URL).permitAll()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
