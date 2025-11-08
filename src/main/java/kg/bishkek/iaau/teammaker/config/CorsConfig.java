@@ -16,22 +16,21 @@ public class CorsConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // Allow requests from any localhost port (for development)
-        // Use setAllowedOriginPatterns instead of setAllowedOrigins to support wildcards
         configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*"));
 
-        // Allow all HTTP methods
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
+        // Explicitly set applyPermitDefaultValues to false to have full control
+        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
 
-        // Allow all headers
+        // Allow all headers from the client
         configuration.setAllowedHeaders(Arrays.asList("*"));
 
-        // Expose headers that the client can access
-        configuration.setExposedHeaders(Arrays.asList("Authorization", "Content-Type", "X-Requested-With"));
+        // Expose all headers to the client
+        configuration.setExposedHeaders(Arrays.asList("*"));
 
         // Allow credentials (cookies, authorization headers)
         configuration.setAllowCredentials(true);
 
-        // How long the response from a pre-flight request can be cached
+        // How long the response from a pre-flight request can be cached (1 hour)
         configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

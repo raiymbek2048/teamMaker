@@ -26,8 +26,8 @@ services:
       MINIO_ROOT_PASSWORD: minio1234
     command: server /data --console-address ":9001"
     ports:
-      - "9000:9000"  # API
-      - "9001:9001"  # Веб-консоль
+      - "9002:9002"  # API
+      - "9003:9003"  # Веб-консоль
     volumes:
       - ./minio-data:/data
     networks:
@@ -50,6 +50,10 @@ services:
       SPRING_FLYWAY_ENABLED: "true"
       SPRING_FLYWAY_BASELINE_ON_MIGRATE: "true"
       SERVER_PORT: 8500
+
+      # Logging for debugging CORS
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_WEB: DEBUG
+      LOGGING_LEVEL_ORG_SPRINGFRAMEWORK_SECURITY: DEBUG
 
       # MinIO интеграция (на будущее)
       MINIO_URL: http://minio:9000
