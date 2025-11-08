@@ -28,6 +28,7 @@ public class SecurityFilter {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(org.springframework.http.HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers("/admin/**").hasRole("ADMIN")
                         .requestMatchers("/trader/**").hasRole("TRADER")
                         .requestMatchers("/item/**").hasAnyAuthority("BARDER_USER","TRADER","ADMIN")
