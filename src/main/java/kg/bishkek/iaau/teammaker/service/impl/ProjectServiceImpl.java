@@ -14,6 +14,7 @@ import kg.bishkek.iaau.teammaker.repository.ProjectRepository;
 import kg.bishkek.iaau.teammaker.repository.UserRepository;
 import kg.bishkek.iaau.teammaker.service.ProjectService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,7 +34,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse createProject(ProjectCreateRequest request, String username) {
         User owner = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found", HttpStatus.NOT_FOUND));
 
         Project project = new Project();
         project.setName(request.getName());
@@ -55,7 +56,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     public ProjectResponse getProjectById(UUID projectId) {
         Project project = projectRepository.findByIdAndActiveTrue(projectId)
-                .orElseThrow(() -> new NotFoundException("Project not found"));
+                .orElseThrow(() -> new NotFoundException("Project not found", HttpStatus.NOT_FOUND));
         return mapToProjectResponse(project);
     }
 
@@ -89,7 +90,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse updateProject(UUID projectId, ProjectUpdateRequest request, String username) {
         Project project = projectRepository.findByIdAndActiveTrue(projectId)
-                .orElseThrow(() -> new NotFoundException("Project not found"));
+                .orElseThrow(() -> new NotFoundException("Project not found", HttpStatus.NOT_FOUND));
 
         if (!project.getOwner().getUsername().equals(username)) {
             throw new UnauthorizedException("You are not the owner of this project");
@@ -110,7 +111,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public void deleteProject(UUID projectId, String username) {
         Project project = projectRepository.findByIdAndActiveTrue(projectId)
-                .orElseThrow(() -> new NotFoundException("Project not found"));
+                .orElseThrow(() -> new NotFoundException("Project not found", HttpStatus.NOT_FOUND));
 
         if (!project.getOwner().getUsername().equals(username)) {
             throw new UnauthorizedException("You are not the owner of this project");
@@ -123,10 +124,10 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse addMemberToProject(UUID projectId, UUID userId, String username) {
         Project project = projectRepository.findByIdAndActiveTrue(projectId)
-                .orElseThrow(() -> new NotFoundException("Project not found"));
+                .orElseThrow(() -> new NotFoundException("Project not found", HttpStatus.NOT_FOUND));
 
         User userToAdd = userRepository.findByIdAndActiveTrue(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found", HttpStatus.NOT_FOUND));
 
         if (project.getMembers().contains(userToAdd)) {
             throw new BadRequestException("User is already a member of this project");
@@ -140,14 +141,14 @@ public class ProjectServiceImpl implements ProjectService {
     @Override
     public ProjectResponse removeMemberFromProject(UUID projectId, UUID userId, String username) {
         Project project = projectRepository.findByIdAndActiveTrue(projectId)
-                .orElseThrow(() -> new NotFoundException("Project not found"));
+                .orElseThrow(() -> new NotFoundException("Project not found", HttpStatus.NOT_FOUND));
 
         if (!project.getOwner().getUsername().equals(username)) {
             throw new UnauthorizedException("Only project owner can remove members");
         }
 
         User userToRemove = userRepository.findByIdAndActiveTrue(userId)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found", HttpStatus.NOT_FOUND));
 
         if (userToRemove.equals(project.getOwner())) {
             throw new BadRequestException("Cannot remove project owner");
@@ -162,7 +163,7 @@ public class ProjectServiceImpl implements ProjectService {
     @Transactional(readOnly = true)
     public List<ProjectListResponse> getUserProjects(String username) {
         User user = userRepository.findByUsername(username)
-                .orElseThrow(() -> new NotFoundException("User not found"));
+                .orElseThrow(() -> new NotFoundException("User not found", HttpStatus.NOT_FOUND));
 
         return projectRepository.findByOwnerIdAndActiveTrue(user.getId()).stream()
                 .map(this::mapToProjectListResponse)
