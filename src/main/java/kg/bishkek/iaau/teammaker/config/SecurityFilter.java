@@ -4,7 +4,6 @@ package kg.bishkek.iaau.teammaker.config;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -24,21 +23,7 @@ public class SecurityFilter {
     private final JwtFilter jwtFilter;
     private final CorsConfigurationSource corsConfigurationSource;
 
-    // Handle OPTIONS requests with highest priority
     @Bean
-    @Order(1)
-    public SecurityFilterChain corsSecurityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .securityMatcher(request -> "OPTIONS".equals(request.getMethod()))
-                .cors(cors -> cors.configurationSource(corsConfigurationSource))
-                .csrf(AbstractHttpConfigurer::disable)
-                .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
-
-        return http.build();
-    }
-
-    @Bean
-    @Order(2)
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
