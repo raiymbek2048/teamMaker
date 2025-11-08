@@ -14,9 +14,14 @@ public class CorsConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
+        // Allow requests from any localhost port (for development) and external server
+        // Use setAllowedOriginPatterns instead of setAllowedOrigins to support wildcards
+        configuration.setAllowedOriginPatterns(Arrays.asList(
+                "http://localhost:*",
+                "http://127.0.0.1:*",
+                "http://85.113.27.42:*"
+        ));
 
-        // Allow requests from any localhost port (for development)
-        configuration.setAllowedOriginPatterns(Arrays.asList("http://localhost:*", "http://127.0.0.1:*"));
 
         // Explicitly set applyPermitDefaultValues to false to have full control
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"));
