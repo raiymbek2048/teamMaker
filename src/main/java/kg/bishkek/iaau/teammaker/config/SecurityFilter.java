@@ -29,7 +29,7 @@ public class SecurityFilter {
     @Order(1)
     public SecurityFilterChain corsSecurityFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher(org.springframework.http.HttpMethod.OPTIONS, "/**")
+                .securityMatcher(request -> "OPTIONS".equals(request.getMethod()))
                 .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.anyRequest().permitAll());
