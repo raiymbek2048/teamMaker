@@ -64,6 +64,15 @@ services:
     networks:
       - team-net
 
+  frontend:
+    build: ./frontend
+    container_name: team-frontend
+    ports:
+      - "4200:80"
+    networks:
+      - team-net
+    restart: unless-stopped
+
 networks:
   team-net:
     driver: bridge
